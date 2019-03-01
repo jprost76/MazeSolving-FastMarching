@@ -14,7 +14,6 @@ Ceci est un script temporaire.
 
 import numpy as np
 import math
-import heapq
 
 class Sommet:
     def __init__(self,stat,val):
@@ -105,18 +104,16 @@ class DistanceMap:
         Told = self.Map[i][j].getValue()
         if ( t < Told ):
             self.Map[i][j].setValue(t)
-            if ((Told,v) in self.listeFront):
-                self.listeFront.remove((Told,v))
-                heapq.heappush(self.listeFront,(t,v))
-        else :
-            if (not ((Told,v) in self.listeFront)):
-                heapq.heappush(self.listeFront,(Told,v))
+        if (not (v in self.listeFront)):
+            self.listeFront.append(v)
      
     def iterate(self):
-        u = heapq.heappop(self.listeFront)
+        temp = [(self.Map[v[0]][v[1]].getValue(),v) for v in self.listeFront]
+        u = min(temp)
         iu = u[1][0]
         ju = u[1][1]   
         self.Map[iu][ju].setStatutVisited()
+        self.listeFront.remove(u[1])
         for v in self.VoisinsNonVisites(iu,ju):
             self.update(v)
     

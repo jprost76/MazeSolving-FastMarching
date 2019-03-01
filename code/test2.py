@@ -27,7 +27,7 @@ F[5:40,43] = noir
 Ft = 256 - F
 plt.figure()
 plt.gray()
-plt.imshow(Ft,interpolation='nearest')  
+plt.imshow(F,interpolation='nearest')  
 
 #%% calcul de la fonction distance T
 p0 = np.array((3,2))
@@ -65,42 +65,7 @@ y = [p[0] for p in mu]
 fig = plt.figure()
 plt.hold('true')
 ax = fig.add_subplot(111)
-ax.imshow(F,interpolation='nearest')  
+ax.imshow(F,cmap='gray',interpolation='nearest')  
 ax.scatter(x,y,c='r')
 plt.show()
 
-#%%
-
-X = np.arange(T.shape[1])
-Y = np.arange(T.shape[0])
-
-#interpolation de T
-T_inter = interpolate.RectBivariateSpline(Y,X,T)
-
-#%%
-
-h = 0.1;
-
-#point de départ
-p = np.array((44,45))
-
-#courbe
-mu = []
-
-it=0;
-while ((norm(p-p0,2)>h) & (it<10)):
-    mu.append(p)
-    gradTpx = T_inter(p[0],p[1],dx=1)[0,0]
-    gradTpy = T_inter(p[0],p[1],dy=1)[0,0]
-    gradTp = np.array((gradTpy,gradTpx))
-    p = p - gradTp/norm(gradTp,2)
-    it = it+1
-    
-x = [p[1] for p in mu]
-y = [p[0] for p in mu]
-fig = plt.figure(figsize=(10,10))
-plt.hold('true')
-ax = fig.add_subplot(111)
-ax.imshow(T,interpolation='nearest')  
-ax.scatter(x,y,c='r')
-plt.show()
