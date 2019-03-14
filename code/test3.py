@@ -41,16 +41,22 @@ gradT = np.gradient(T)
 h = 0.1
 
 #%%
-#point de départ
-p = np.array((570,10))
+gradT = np.gradient(T)
 
+# pas de la méthode du gradient
+h = 0.1
+
+#point de départ
+p = np.array((45,45))
 #courbe
 mu = []
-
-while (norm(p-p0,2)>h):
+it = 0;
+while ((norm(p-p0,2)>1) and (it<1500)):
     mu.append(p)
-    gradTp = np.array((gradT[0][p[0],p[1]],gradT[1][p[0],p[1]]))
-    p = p - gradTp/norm(gradTp,2)
+    gradTp = np.array(( gradT[0][int(round(p[0])),int(round(p[1]))] , gradT[1][int(round(p[0])),int(round(p[1]))]))
+    p = p - h*gradTp/norm(gradTp,2)
+    print(norm(p-p0,2))
+    it += 1
     
 #%%
 
