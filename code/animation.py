@@ -43,21 +43,35 @@ plt.imshow(F,interpolation='nearest')
 p0 = np.array((4,3))
 m = classMap.DistanceMap([p0],Ft)
 
-#%%
+#%% affichage rapide
+fig,ax = plt.subplots()
 
-fig = plt.figure()
+#im = plt.imshow(m.distanceMap())
+im = plt.imshow(Ft,interpolation='nearest', animated=True,cmap='Greys')
 
-plt.plasma()
-im = plt.imshow(m.distanceMap(), animated=True)
-#im = plt.imshow(F,interpolation='nearest')
 
 def updatefig(*args):
     m.iterate()
     T = m.distanceMap()
-    ret = T
-    ret[np.isinf(T)] = Ft[np.isinf(T)]
-    im.set_array(ret)
+    im.set_array(T)
     return im,
 
-ani = animation.FuncAnimation(fig, updatefig, interval=10, blit=False)
+ani = animation.FuncAnimation(fig, updatefig, interval=1, blit=False,repeat='False')
 plt.show()
+
+#%% affichage avec superposition sur l'image initiale (ne fonctionne pas!)
+
+fig,ax = plt.subplots()
+
+#im = plt.imshow(m.distanceMap())
+im = plt.imshow(Ft,interpolation='nearest', animated=True,cmap='Greys')
+
+def updatefig(*args):
+    m.iterate()
+    T = m.distanceMap()
+    T_masked = np.ma.masked_array(T,np.isinf(T))
+    ax.imshow(T_masked,cmap='plasma')
+
+ani = animation.FuncAnimation(fig, updatefig, interval=50, blit=False,repeat='False')
+plt.show()
+
