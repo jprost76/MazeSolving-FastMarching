@@ -14,6 +14,7 @@ Ceci est un script temporaire.
 
 import numpy as np
 import math
+from numpy.linalg import norm
 
 class Sommet:
     """
@@ -56,27 +57,28 @@ class DistanceMap:
         classe permettant de résoudre l'équation d'Eikonal |gradT| = F,
         avec la méthode de fast marching
     """
-    def __init__(self,SInit,f):
+    def __init__(self,sinit,f):
         """
             initialise l'objet distance Map
             
-            :param SInit: liste des sommets initiaux (tq T(x,y)=0) Sinit =[(x1,y1),(x2,y2),...]
+            :param sinit: sommet initial (tq T(x,y)=0) p0=(i0,j0)
             :param f: numpy.ndarray 2D correspondant au second membre de l'équation d'Eikonal (image)
             
         """
+        self.p0 = sinit
         self.hauteur = f.shape[0]
         self.largeur = f.shape[1]
         self.Map = [[Sommet("FAR",math.inf) for j in range(f.shape[1])] for i in range(f.shape[0])]
         self.listeFront = []
         self.F = f
-        for s in SInit: 
-            i = s[0]
-            j = s[1]
-            if ((i<f.shape[0]) & (j<f.shape[1])):
-                self.Map[i][j].setValue(0)
-                self.Map[i][j].setStatutVisited()
-                for v in self.VoisinsNonVisites(i,j):
-                    self.update(v)
+       
+        i = sinit[0]
+        j = sinit[1]
+        if ((i<f.shape[0]) & (j<f.shape[1])):
+            self.Map[i][j].setValue(0)
+            self.Map[i][j].setStatutVisited()
+            for v in self.VoisinsNonVisites(i,j):
+                self.update(v)
                                                    
     def CoordValides(self,i,j):
         """
@@ -112,6 +114,7 @@ class DistanceMap:
         i = v[0]
         j = v[1]
         # on traite les cas ou le sommet v est situé sur un bord
+        #TODO : mettre + inf a l'exterieur pour s'économiser la vérification
         if (i==0):
             T1 = self.Map[i+1][j].getValue()
         else : 
@@ -196,3 +199,33 @@ class DistanceMap:
                 D[i,j] = self.Map[i][j].getValue()
         return D
 
+    def calculGeodesic(self,pi,alpha=0.1,it_max=100000):
+        """
+            calcul le plus court chemin du point p au point p0 (le point initial) 
+            en utilisant la descente du gradient sur T. 
+            la fonction calculerDistance() doit être appelée avant.
+            
+            :param pi : point de départ de la descente du gradient p=(i,j)
+            :param alpha : pas de la descente du gradient
+            :param it : nombre d'itérations max
+            
+            :return I : liste des coordonnées en i des points obtenues aux iterations de la descente
+            :return J : liste des coordonnées en J des points obtenues aux iterations de la descente
+            ex : ax.scatter(J,I)
+        """
+        
+        gradT = np.gradient(self.distanceMap())
+        p = np.array(pi)
+        p0 = np.array(self.p0)
+        it = 0
+        I = []
+        J = []
+        while ((norm(p-p0,2)>1) and (it<it_max)):
+            I.append(p[0])
+            J.append(p[1])
+            #TODO : interpoler le gradient
+            gradTp = np.array(( gradT[0][int(round(p[0])),int(round(p[1]))] , gradT[1][int(round(p[0])),int(round(p[1]))]))
+            p = p - alpha*gradTp/norm(gradTp,2)
+            it += 1
+            
+        return I,J

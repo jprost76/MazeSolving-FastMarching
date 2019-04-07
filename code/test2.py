@@ -37,8 +37,8 @@ plt.gray()
 plt.imshow(F,interpolation='nearest') 
 
 #%% calcul de la fonction distance T
-p0 = np.array((4,3))
-m = DistanceMap([p0],Ft)
+p0 = (4,3)
+m = DistanceMap(p0,Ft)
 m.calculerDistance()
 
 #%%
@@ -49,30 +49,13 @@ plt.imshow(T,interpolation='nearest')
      
 #%% calcul de la geodesic en utilisant la descente du gradient (à améliorer : interpolation du gradient)
      
-gradT = np.gradient(T)
-
-# pas de la méthode du gradient
-h = 0.1
-
-#point de départ
-p = np.array((45,45))
-#courbe
-mu = []
-it = 0;
-while ((norm(p-p0,2)>1) and (it<1500)):
-    mu.append(p)
-    gradTp = np.array(( gradT[0][int(round(p[0])),int(round(p[1]))] , gradT[1][int(round(p[0])),int(round(p[1]))]))
-    p = p - h*gradTp/norm(gradTp,2)
-    print(norm(p-p0,2))
-    it += 1
+I,J = m.calculGeodesic((43,44))
     
 #%%
 
-x = [p[1] for p in mu]
-y = [p[0] for p in mu]
 fig = plt.figure()
 ax = fig.add_subplot(111)
 ax.imshow(T,cmap='plasma',interpolation='nearest')  
-ax.plot(x,y,c='r')
+ax.plot(J,I,c='r')
 plt.show()
 
