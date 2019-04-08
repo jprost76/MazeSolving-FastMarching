@@ -15,6 +15,8 @@ Ceci est un script temporaire.
 import numpy as np
 import math
 from numpy.linalg import norm
+from scipy import interpolate
+from scipy import optimize
 
 class Sommet:
     """
@@ -79,7 +81,22 @@ class DistanceMap:
             self.Map[i][j].setStatutVisited()
             for v in self.VoisinsNonVisites(i,j):
                 self.update(v)
-                                                   
+     
+    def loadMap(self,T):
+        """
+            Permet de charger une fonction T déja calcalulé.
+            attribue a chaque sommet (i,j) la valeur  T[i,j].
+            
+            :param T : ndarray de meme dimension que F
+        """                                           
+        if (self.F.shape != T.shape):
+            print("erreur : dimensions invalides.\n T doit etre de dimension ",self.F.shape)
+        else : 
+            for i in range(self.hauteur):
+                for j in range(self.largeur):
+                    self.Map[i][j].setValue(T[i,j])
+                    self.Map[i][j].setStatutVisited()
+        
     def CoordValides(self,i,j):
         """
             retourne un booleén, true si les coordonnées (i,j) sont valides,
@@ -198,6 +215,8 @@ class DistanceMap:
             for j in range(self.largeur):
                 D[i,j] = self.Map[i][j].getValue()
         return D
+    
+    
 
     def calculGeodesic(self,pi,alpha=0.1,it_max=100000):
         """
@@ -229,3 +248,18 @@ class DistanceMap:
             it += 1
             
         return I,J
+      
+    def calculGeodesicInter(self,pi,alpha=0.1,it_max=100000):
+        #interpolation de T
+        T_inter = interpolate.interp2d(np.arange(self.largeur),np.arange(self.hauteur),self.distanceMap(),kind='linear')
+        
+        def T_inter2(u):
+            return T_inter(u[0],u[1])
+            
+        p = np.array(pi)
+        
+        sol = optimize.fmin_cg(T_inter2,p,maxiter=it_max,full_output=True,retall=True)
+            
+       # I = [p[1] for p in sol[-1]]
+        #J = [p[0] for p in sol[-1]]
+        return sol
