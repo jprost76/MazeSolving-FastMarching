@@ -13,7 +13,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import classMap
-
+import scipy.ndimage
 
 F1 = 255*np.ones((50,49))
 noir = 1
@@ -32,22 +32,29 @@ noir = 1
 F2[10,10:40] = noir
 F2[10:35,10] = noir
 
-#%%choix de l'image
+#choix de l'image
 F=F1
 Ft = 256 - F
 plt.figure()
 plt.gray()
 plt.imshow(F,interpolation='nearest') 
 
-#%% calcul de la fonction distance T
-p0 = np.array((4,3))
-m = classMap.DistanceMap([p0],Ft)
-
+#%%
+F2 = imgnb = scipy.ndimage.imread("../res/maze.png",mode='L')
+Ft2 = 256 - F2
+plt.figure()
+plt.gray()
+plt.imshow(F2,interpolation='nearest')
 #%% affichage rapide
+
+p0 = np.array((315,169))
+m = classMap.DistanceMap(p0,Ft2)
+
 fig,ax = plt.subplots()
 
-#im = plt.imshow(m.distanceMap())
-im = plt.imshow(Ft,interpolation='nearest', animated=True,cmap='Greys')
+plt.plasma()
+im = plt.imshow(m.distanceMap())
+#im = plt.imshow(Ft,interpolation='nearest', animated=True,cmap='Greys')
 
 
 def updatefig(*args):
@@ -59,7 +66,10 @@ def updatefig(*args):
 ani = animation.FuncAnimation(fig, updatefig, interval=1, blit=False,repeat='False')
 plt.show()
 
-#%% affichage avec superposition sur l'image initiale (ne fonctionne pas!)
+#%% affichage avec superposition sur l'image initiale (trop lent!)
+
+p0 = np.array((4,3))
+m = classMap.DistanceMap([p0],Ft)
 
 fig,ax = plt.subplots()
 
@@ -72,6 +82,6 @@ def updatefig(*args):
     T_masked = np.ma.masked_array(T,np.isinf(T))
     ax.imshow(T_masked,cmap='plasma')
 
-ani = animation.FuncAnimation(fig, updatefig, interval=50, blit=False,repeat='False')
+ani = animation.FuncAnimation(fig, updatefig, interval=5, blit=False,repeat='False')
 plt.show()
 

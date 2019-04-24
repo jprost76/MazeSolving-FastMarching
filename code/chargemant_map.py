@@ -32,7 +32,7 @@ m = classMap.DistanceMap(p0,F)
 m.loadMap(T)
 
 #%%
-I,J  = m.calculGeodesic((488,426),it_max=300000,alpha=0.03)
+I,J  = m.calculGeodesic((488,426),it_max=300000,alpha=1.0)
 
 #%
 fig = plt.figure()
