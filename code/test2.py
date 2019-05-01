@@ -37,11 +37,11 @@ plt.gray()
 plt.imshow(F,interpolation='nearest') 
 
 #%% calcul de la fonction distance T
-p0 = (4,3)
+p0 = [(25,30)]
 m = DistanceMap(p0,Ft)
 m.calculerDistance()
 
-#%%
+
 T = m.distanceMap()
 plt.hot()
 plt.figure()

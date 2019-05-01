@@ -64,24 +64,23 @@ class DistanceMap:
         """
             initialise l'objet distance Map
             
-            :param sinit: sommet initial (tq T(x,y)=0) p0=(i0,j0)
+            :param sinit: liste des sommet initiaux (tq T(x,y)=0) sinit = [(i0,j0),(i1,j1),...]
             :param f: numpy.ndarray 2D correspondant au second membre de l'équation d'Eikonal (image)
             
         """
-        self.p0 = sinit
+        self.p0 = sinit[0]
         self.hauteur = f.shape[0]
         self.largeur = f.shape[1]
         self.Map = [[Sommet("FAR",math.inf) for j in range(f.shape[1])] for i in range(f.shape[0])]
         self.listeFront = []
         self.F = f
        
-        i = sinit[0]
-        j = sinit[1]
-        if ((i<f.shape[0]) & (j<f.shape[1])):
-            self.Map[i][j].setValue(0)
-            self.Map[i][j].setStatutVisited()
-            for v in self.VoisinsNonVisites(i,j):
-                self.update(v)
+        for (i,j) in sinit:
+            if ((i<f.shape[0]) & (j<f.shape[1])):
+                self.Map[i][j].setValue(0)
+                self.Map[i][j].setStatutVisited()
+                for v in self.VoisinsNonVisites(i,j):
+                    self.update(v)
      
     def loadMap(self,T):
         """

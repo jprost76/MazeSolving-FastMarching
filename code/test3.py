@@ -11,7 +11,7 @@ import classMap
 import scipy.ndimage
 
 #%% chargement de l'image
-name = 'maze6'
+name = 'maze4'
 
 imgnb = scipy.ndimage.imread('../res/'+name+'.png',mode='L')
 
@@ -24,11 +24,11 @@ W = 1./(0.001+imgnb)
 
 #%% calcul de la map distance T
 
-p0 = (19,399)
+p0 = (6,558)
 m = classMap.DistanceMap(p0,W)
 m.calculerDistance()
 T = m.distanceMap()
-np.save('../result/'+name+'.npy',T)
+#np.save('../result/'+name+'.npy',T)
 
 #%% affichage de T
 
@@ -41,7 +41,7 @@ plt.title("solution de l'équation d'Eikonal |grad(T)|=F")
 
 #%% calcul de la géodesic
 
-I,J = m.calculGeodesic((398,331),alpha=0.05,it_max=300000)
+I,J = m.calculGeodesic((748,4),alpha=0.05,it_max=300000)
 
 #%% affichage de la géodesique
 fig = plt.figure()
