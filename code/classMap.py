@@ -17,6 +17,7 @@ import math
 from numpy.linalg import norm
 from scipy import interpolate
 from scipy import optimize
+import heapq
 
 class Sommet:
     """
@@ -130,8 +131,7 @@ class DistanceMap:
         """
         i = v[0]
         j = v[1]
-        # on traite les cas ou le sommet v est situé sur un bord
-        #TODO : mettre + inf a l'exterieur pour s'économiser la vérification
+# on traite les cas ou le sommet v est situé sur un bord
         if (i==0):
             T1 = self.Map[i+1][j].getValue()
         else : 
@@ -151,11 +151,24 @@ class DistanceMap:
             t = (T1+T2+math.sqrt(2*self.F[i,j]**2-(T1-T2)**2))*0.5
         else:
             t = min(T1,T2)+self.F[i,j]
+#l'ancienne valeur du sommet
         Told = self.Map[i][j].getValue()
+  
         if ( t < Told ):
+#actualisation de la valeur T(i,j)            
             self.Map[i][j].setValue(t)
-        if (not (v in self.listeFront)):
-            self.listeFront.append(v)
+#actualisation de la listeFront
+            if (self.Map[i][j].isFar()):
+                heapq.heappush(self.listeFront,(t,v))
+                self.Map[i][j].setStatutFront()
+            else :
+#si le sommet est deja sur le front
+                index_sommet = self.listeFront.index((Told,v))
+                self.listeFront[index_sommet] = (t,v)
+                heapq.heapify(self.listeFront)
+                
+            
+     
      
     def iterate(self):
         """ 
@@ -163,13 +176,12 @@ class DistanceMap:
         """
         # recherche du minium parmis les sommets du front
         #TODO : optimiser la recherche du minimum avec un tri par tas (import heapq?)
-        temp = [(self.Map[v[0]][v[1]].getValue(),v) for v in self.listeFront]
-        u = min(temp)
+        
+        u = heapq.heappop(self.listeFront)
         
         iu = u[1][0]
         ju = u[1][1]   
         self.Map[iu][ju].setStatutVisited()
-        self.listeFront.remove(u[1])
         for v in self.VoisinsNonVisites(iu,ju):
             self.update(v)
     
