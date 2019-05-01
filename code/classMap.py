@@ -254,8 +254,19 @@ class DistanceMap:
         while ((norm(p-p0,2)>1) and (it<it_max)):
             I.append(p[0])
             J.append(p[1])
-            #TODO : interpoler le gradient
-            gradTp = np.array(( gradT[0][int(round(p[0])),int(round(p[1]))] , gradT[1][int(round(p[0])),int(round(p[1]))]))
+#sommet le plus proche de p dans la grille
+            ip = int(round(p[0]))
+            jp = int(round(p[1]))
+            if (ip >= self.hauteur):
+                ip = self.hauteur - 1
+            if (ip < 0):
+                ip = 0
+            if (jp >= self.largeur):
+                jp = self.largeur - 1
+            if (jp < 0):
+                jp = 0
+            
+            gradTp = np.array(( gradT[0][ip,jp] , gradT[1][ip,jp]))
             p = p - alpha*gradTp/norm(gradTp,2)
             it += 1
             
