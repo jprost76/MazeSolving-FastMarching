@@ -1,0 +1,28 @@
+\documentclass{article}
+%\usepackage[cyr]{aeguill}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[francais]{babel}
+\usepackage{amsmath}
+\usepackage{fancyhdr}
+\usepackage{amsfonts}
+\usepackage{makeidx}         
+\title{Implémentation de l'algorithme du fast-marching pour la résolution d'un labyrinthe}
+\usepackage[pdftex]{graphicx}
+\author{Jean Prost \and Lucas Potin \and Edouard Gouteux}
+
+\begin{document}
+	
+\section{L'algorithme du fast marching}
+
+La méthode du fast marching a été introduite par James Setian. Cette méthode possède notamment des applications en mécanique des fluides et en traitement d'image. Cette méthode permet de résoudre l'équation d'Eikonal, de la forme :
+\begin{equation}
+|\nabla T|=\mathcal{F}
+\end{equation}
+Ici, $ \mathcal{F}$ et $T$ sont des fonctions $\mathbb{R}^n \to \mathbb{R}$, ou $n$ peut prendre la valeur 1, 2, où 3. $\mathcal{F}$ est la métrique donné du problème, et $T$ est la fonction à déterminer. Ici nous nous concentrerons sur des fonctions $ \mathcal{F}$ et $T$ de $\mathbb{R}^2 \to \mathbb{R}$. 
+\section{Programmation}
+
+\section{Résultats}
+
+
+\end{document} 
