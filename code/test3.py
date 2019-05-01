@@ -25,7 +25,7 @@ W = 1./(0.001+imgnb)
 #%% calcul de la map distance T
 
 p0 = (6,558)
-m = classMap.DistanceMap(p0,W)
+m = classMap.DistanceMap([p0],W)
 m.calculerDistance()
 T = m.distanceMap()
 #np.save('../result/'+name+'.npy',T)
