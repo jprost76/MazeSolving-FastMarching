@@ -11,7 +11,7 @@ import classMap
 import scipy.ndimage
 
 #%% chargement de l'image
-name = 'maze5'
+name = 'maze'
 
 img = scipy.ndimage.imread('../res/'+name+'.png',mode='L')
 plt.imshow(img,interpolation='nearest',cmap='gray') 
@@ -39,15 +39,15 @@ plt.imshow(T1,interpolation='nearest')
 Vit = T1/np.max(T1)
 W = 1./(0.01+imgnb) + 8./(0.001+Vit)
 
-m2  = DistanceMap([(60,639)],W)
+m2  = DistanceMap([(3,152)],W)
 m2.calculerDistance()
 T2 = m2.distanceMap()
 plt.hot()
 plt.figure()
 plt.imshow(T2,interpolation='nearest')
 
-#%
-I,J = m2.calculGeodesic((253,1),alpha=0.05,it_max=300000)
+#%%
+I,J = m2.calculGeodesic((321,168),alpha=0.05,it_max=300000)
 
 #%% affichage de la géodesique
 fig = plt.figure()
