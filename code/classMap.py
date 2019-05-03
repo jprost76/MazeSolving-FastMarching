@@ -174,7 +174,6 @@ class DistanceMap:
             réalise une itération de l'algo du fast marching
         """
         # recherche du minium parmis les sommets du front
-        #TODO : optimiser la recherche du minimum avec un tri par tas (import heapq?)
         
         u = heapq.heappop(self.listeFront)
         
@@ -183,6 +182,9 @@ class DistanceMap:
         self.Map[iu][ju].setStatutVisited()
         for v in self.VoisinsNonVisites(iu,ju):
             self.update(v)
+    
+    def algoFini(self):
+        return (self.listeFront == [])
     
     def calculerDistance(self):
         """
@@ -224,7 +226,10 @@ class DistanceMap:
         D = np.zeros(self.F.shape)
         for i in range(self.hauteur):
             for j in range(self.largeur):
-                D[i,j] = self.Map[i][j].getValue()
+                if (self.Map[i][j].isVisited()): 
+                    D[i,j] = self.Map[i][j].getValue()
+                else:
+                    D[i,j] = np.inf;
         return D
     
     

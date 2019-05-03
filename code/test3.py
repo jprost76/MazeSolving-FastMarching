@@ -11,7 +11,7 @@ import classMap
 import scipy.ndimage
 
 #%% chargement de l'image
-name = 'maze4'
+name = 'maze7'
 
 imgnb = scipy.ndimage.imread('../res/'+name+'.png',mode='L')
 
