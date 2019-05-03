@@ -37,7 +37,8 @@ plt.imshow(T1,interpolation='nearest')
 #%% second fast Marching
 #vitesse : proportionnelle à la distance au bord
 Vit = T1/np.max(T1)
-W = 1./(0.01+imgnb) + 8./(0.001+Vit)
+W = 1./(0.01+imgnb) + 1./(0.001+Vit)
+#W = 1./(0.001+Vit)
 
 m2  = DistanceMap([(3,152)],W)
 m2.calculerDistance()
@@ -46,10 +47,10 @@ plt.hot()
 plt.figure()
 plt.imshow(T2,interpolation='nearest')
 
-#%%
+#%
 I,J = m2.calculGeodesic((321,168),alpha=0.05,it_max=300000)
 
-#%% affichage de la géodesique
+#% affichage de la géodesique
 fig = plt.figure()
 ax = fig.add_subplot(111)
 #ax.imshow(T2,interpolation='nearest',cmap='plasma')
