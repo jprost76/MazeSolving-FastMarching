@@ -29,15 +29,25 @@ plt.imshow(F,interpolation='nearest')
 #fast marching
 
 s0 = [(14,14)]
-m = distanceMap(s0,W)
+m = DistanceMap(s0,W)
 
+#%%
 fig,ax = plt.subplots()
-plt.imshow(Ft,interpolation='nearest', animated=True,cmap='Greys')
+plt.imshow(W,interpolation='nearest', cmap='Greys')
+#%%
 it = 0
+while (it<1768):
+    m.iterate()
+    it += 1
 
-while (!m.algoFini()):
+#%%
+while (not m.algoFini()) :
     m.iterate()
     T = m.distanceMap()
     T_masked = np.ma.masked_array(T,np.isinf(T))
-    ax.imshow(T_masked,cmap='plasma')
+    if (it%5 == 0):
+        ax.imshow(T_masked,cmap='plasma')
+        plt.savefig('../result/animation2/frame'+str(it))
+    it += 1
+    
     
