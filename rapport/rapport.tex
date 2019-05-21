@@ -45,7 +45,16 @@ On applique ensuite l'algorithme du fast marchinq pour cette métrique, en chois
 	\end{center}
 \end{figure}
 
-On applique ensuite une descente du gradient
+On applique ensuite la descente du gradient sur la fonction T obtenue, en partant de l'autre extrémité du labyrinthe (celle que l'on n'a pas utilisé comme sommet initial). Le chemin nous est alors donné par les points obtenus au cours des itérations successives de la descente.
 
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[scale=0.55]{../result/geo_maze.png}
+		\caption{Solution du labyrinthe obtenue avec la descente du gradient}
+	\end{center}
+\end{figure}
+
+\subsection{2 fois plus de fast marching!}
+Le chemin obtenu est correcte, néanmoins il a tendance à "coller" les bords. Cela n'est pas très beau visuellement, et, pour certaines applications cela peut être problématique. Par exemple, dans le cas de la planification du chemin d'un robot, on peut souhaiter  que notre robot ne passe pas trop près des bords. Pour remédier à ce problème, une solution est d'inclure dans la métrique $W$ une pénalité pour les passages près des bords.
 
 \end{document} 
