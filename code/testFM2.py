@@ -11,14 +11,15 @@ import classMap
 import scipy.ndimage
 
 #%% chargement de l'image
-name = 'maze'
+name = 'maze8'
 
 img = scipy.ndimage.imread('../res/'+name+'.png',mode='L')
 plt.imshow(img,interpolation='nearest',cmap='gray') 
 #%noir = 0, blanc=1
-imgnb = np.ones(img.shape)
-imgnb[np.where(img==0)] = 0
-
+imgnb = np.zeros(img.shape)
+imgnb[np.where(img!=0)] = 1
+ #%%
+plt.imshow(imgnb,interpolation='nearest',cmap='gray')
 
 #%% calcul de la vitesse (premier FastMarching)
 
@@ -37,25 +38,27 @@ plt.imshow(T1,interpolation='nearest')
 #%% second fast Marching
 #vitesse : proportionnelle à la distance au bord
 Vit = T1/np.max(T1)
-W = 1./(0.01+imgnb) + 1./(0.001+Vit)
-#W = 1./(0.001+Vit)
+W = 1./(0.0001+imgnb) + 10./(0.0001+Vit)
 
-m2  = DistanceMap([(3,152)],W)
+p0 = (399,332)
+m2  = DistanceMap([p0],W)
 m2.calculerDistance()
 T2 = m2.distanceMap()
+#%
 plt.hot()
 plt.figure()
 plt.imshow(T2,interpolation='nearest')
+plt.scatter([p0[1]],[p0[0]],c="Green",s=30)
 
 #%
-I,J = m2.calculGeodesic((321,168),alpha=0.05,it_max=300000)
+I,J = m2.calculGeodesic((20,399),alpha=0.05,it_max=300000)
 
-#% affichage de la géodesique
+#%% affichage de la géodesique
 fig = plt.figure()
 ax = fig.add_subplot(111)
 #ax.imshow(T2,interpolation='nearest',cmap='plasma')
 ax.imshow(imgnb,interpolation='nearest',cmap='gray')
-ax.plot(J,I,c='g',linewidth=2)
+ax.plot(J,I,c='g',linewidth=2.5)
 ax.set_ylim((imgnb.shape[0],0))
 ax.set_xlim((0,imgnb.shape[1]))
 plt.show()
