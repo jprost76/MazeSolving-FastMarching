@@ -28,9 +28,57 @@ Ici, $ \mathcal{F}$ et $T$ sont des fonctions $\mathbb{R}^n \to \mathbb{R}$, ou 
 \begin{equation}
 |\nabla T(x,y)|=\mathcal{F}(x,y)
 \end{equation}
+L'algorihme du fast-marching nous permet d'obtenir la solution de viscosité de l'équation d'Eikonal.
+D'un point de vue géométrique, la fonction $T(x,y)$ obtenue correspond alors à la distance au point initial $x0$ sur la surface ${x,y,\mathcal{F}(x,y)}$, la distance étant alors donnée par $ds^2=\mathcal{F}^2(x,y)(dx^2+dy^2)$. \\
+On suppose que la fonction $F$ nous est donnée sur une grille $(i\Delta x,j\Delta y)_{i=\{1,..,N\},j=\{1..M\}}$. On cherche alors à connaitre la valeur de $T$ pour tous sommet de la grille.
+\subsection{Schéma numérique}
+
+L'algorithme du fast-marching repose sur approximation "ascendante" du gradient donnée par :
+\begin{equation}
+|\nabla T(x,y)|^2 \approx 
+\left(
+\left( max \left( D_{ij}^{-x}T,-D_{ij}^{+x}T,0 \right)
+\right)^2  +
+\left( max \left( D_{ij}^{-y}T,-D_{ij}^{+y}T,0 \right)
+\right)^2
+\right)^{\frac{1}{2}}
+\end{equation}
+ Où $D_{ij}$ est l'opérateur approchant la dérivée en $T_{ij} \equiv T(i\Delta x,j\Delta y)$ :
+ \begin{eqnarray}
+ D_{ij}^{-x}T = \frac{\left(T_{ij} - T_{i-1,j}\right)}{h}
+ \end{eqnarray}
+ L'algorithme consiste donc à résoudre :
+ \begin{equation}
+ \left\{
+ \begin{array}{lrc}
+ \left( max \left( D_{ij}^{-x}T,-D_{ij}^{+x}T,0 \right)
+ \right)^2  +
+ \left( max \left( D_{ij}^{-y}T,-D_{ij}^{+y}T,0 \right)
+ \right)^2
+  & = & \mathcal{F}_{ij}^2 \\
+ T(x_0,y_0) & = &0 
+ \end{array}
+ \right.
+ \label{eq:system}
+ \end{equation}
+On suppose $\Delta x = \Delta y = h = 1$. On a alors :
+\[
+max \left( D_{ij}^{-x}T,-D_{ij}^{+x}T,0 \right) = 
+max \left(T_{i,j} - min\left(T_{i-1,j},T_{i+1,j}\right),0\right)
+\]
+
+L'approximation \ref{eq:system} devient :
+
+\begin{equation}
+\left(max \left\{T_{i,j} - min\left\{T_{i-1,j},T_{i+1,j}\right\},0\right\}\left)^2
++
+\right(max \left\{T_{i,j} - min\left\{T_{i,j-1},T_{i,j+1}\right\},0\right\}\left)^2 
+= \mathcal{F}_{ij}^2
+\end{equation}
 
 
-\section{Programmation}
+
+
 
 \section{Application à la recherche du plus court chemin dans un labyrinthe}
 \subsection{Première approche}
