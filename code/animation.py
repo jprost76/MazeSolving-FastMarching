@@ -1,90 +1,137 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Mar 16 18:02:38 2019
+Created on Tue May 28 20:52:20 2019
 
 @author: jprost
-
-faire tourner dans une console python (et non ipython) 
-pour visualiser l'animation
-
 """
+from copy import copy
 
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-from classMap import DistanceMap
+import matplotlib.colors as colors
+import classMap
+import scipy.ndimage
 
-F1 = 255*np.ones((50,49))
-noir = 1
-F1[1,0:47] = noir
-F1[5,0:15] = noir
-F1[5:40,20] = noir
-F1[5,20:43] = noir
-F1[1:46,47] = noir
-F1[40,20:44] = noir
-F1[5:47,15] = noir
-F1[46,15:48] = noir
-F1[5:40,43] = noir
+from matplotlib.animation import FFMpegWriter
+writer = FFMpegWriter(fps=15, metadata=dict(artist='Me'), bitrate=1800)
 
-F2 = 255*np.ones((50,50))
-noir = 1
-F2[10,10:40] = noir
-F2[10:35,10] = noir
+#choix du labyrinthe
+name = 'maze'
 
-#choix de l'image
-F=F2
-Ft = 256 - F
-plt.figure()
-plt.gray()
-plt.imshow(F,interpolation='nearest') 
+#chargement de l'image
+img = plt.imread('../res/'+name+'.png')[:,:,0]
+plt.imshow(img,interpolation='nearest',cmap='gray') 
+#%noir = 0, blanc=1
+imgnb = np.zeros(img.shape)
+imgnb[np.where(img!=0)] = 1
 
-#%%
-#F2 = imgnb = scipy.ndimage.imread("../res/maze.png",mode='L')
-Ft2 = 256 - F2
-plt.figure()
-plt.gray()
-plt.imshow(F2,interpolation='nearest')
-#%% affichage rapide
+#colormap speciale
+palette = copy(plt.cm.hot)
+palette.set_under('black', 1.0)
+palette.set_over('black', 1.0)
+palette.set_bad('white', 1)
 
-p0 = (14,14)
-m = classMap.DistanceMap([p0],Ft2)
+#%% calcul de la vitesse
 
-fig,ax = plt.subplots()
+sinit = np.where(imgnb==0)
+linit = list(zip(sinit[0],sinit[1]))
+W1 = 1./(0.001+imgnb)
+m1 = classMap.DistanceMap(linit,W1)
 
-plt.plasma()
+#animation du calcul de la vitesse?
+anim_vit = False
 
-im = plt.imshow(m.distanceMap())
-#im = plt.imshow(Ft,interpolation='nearest', animated=True,cmap='Greys')
+if (anim_vit == True):
+   fig = plt.figure()
+   ims1 = []
+   im = plt.imshow(m1.distanceMap())
+   i =0
+   while (m1.algoFini() == False) :
+      m1.iterate()
+      i += 1
+      if (i%100 == 0):
+          T = m1.distanceMap()
+          #les murs
+          T[((T==np.inf)&(imgnb==0))] = -1
+          T_max = np.max(T[(T!=np.inf) & (imgnb!=0)] )
+          T_masked = np.ma.masked_array(T,np.isinf(T))
+          im = plt.imshow(T_masked,cmap=palette,vmin=0,vmax=T_max,animated=True)
+          ims1.append([im])
+             
+   ani1 = animation.ArtistAnimation(fig, ims1, interval=2, blit=True,repeat_delay=100)
+   plt.show()
+else:
+    m1.calculerDistance()
+    
+T1 = m1.distanceMap()
+   
+    
 
-Writer = animation.writers['ffmpeg']
-writer = Writer(fps=15, metadata=dict(artist='Me'), bitrate=1800)
+#%% ff2
 
-def updatefig(*args):
-    m.iterate()
-    T = m.distanceMap()
-    im.set_array(T)
-    return im,
 
-ani = animation.FuncAnimation(fig, updatefig, interval=1, blit=True,repeat='False')
 
-ani.save('ani0.mp4')
+p0 = [(317,168)]
+Vit = T1/np.max(T1)
+W = 1./(0.0001+imgnb) + 10./(0.0001+Vit)
+m = classMap.DistanceMap(p0,W)
 
-#%% affichage avec superposition sur l'image initiale (trop lent!)
+#animation oui/non?
+anim_ff = True
 
-p0 = [(14,14)]
-m = DistanceMap(p0,Ft)
+if (anim_ff==True):
+    fig = plt.figure()
+    ims = []
+    im = plt.imshow(m.distanceMap())
+    #%
+    i = 0
+    while (m.algoFini() == False) :
+       m.iterate()
+       i += 1
+       if (i%100 == 0):
+          T = m.distanceMap()
+           #mur a -1
+          T[((T==np.inf)&(imgnb==0))] = -1
+          T_max = np.max(T[(T!=np.inf) & (imgnb!=0)] )
+          T_masked = np.ma.masked_array(T,np.isinf(T))
+          im = plt.imshow(T_masked,cmap=palette,vmin=0,vmax=T_max,animated=True)
+          ims.append([im])
+    #%
+    ani = animation.ArtistAnimation(fig, ims, interval=5, blit=True,repeat_delay=500)
 
-fig,ax = plt.subplots()
+    plt.show()
+else:
+    m.calculerDistance()
+    T2 = m.distanceMap()
+    
+#%% gradient a corriger!
+    
+    
+I,J = m.calculGeodesic((4,175))
+anim_grad = True
 
-#im = plt.imshow(m.distanceMap())
-im = plt.imshow(Ft,interpolation='nearest', animated=True,cmap='Greys')
-
-def updatefig(*args):
-    m.iterate()
-    T = m.distanceMap()
-    T_masked = np.ma.masked_array(T,np.isinf(T))
-    ax.imshow(T_masked,cmap='plasma')
-
-ani = animation.FuncAnimation(fig, updatefig, interval=5, blit=True,repeat='False')
-plt.show()
-
+if (anim_grad==True):
+    fig,ax = plt.subplots()
+    Y = []
+    X = []
+    
+    fig = plt.figure()
+    ims = []
+    im = plt.imshow(imgnb)
+    #%
+    for i in range(len(I)):
+        if (i%10 == 0):
+            ax.imshow(imgnb,interpolation='nearest',cmap='gray')
+            ax.set_ylim((imgnb.shape[0],0))
+            ax.set_xlim((0,imgnb.shape[1]))
+            im = ax.plot(J[0:i],I[0:i],c='g',linewidth=2.5,animated=True)
+            ims.append([im])
+    
+    
+        
+    anim3 = animation.FuncAnimation(fig,animate,frames=1000,init_func=init,interval=5,blit=True
+    )
+    plt.show()
+    
+    
