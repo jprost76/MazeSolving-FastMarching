@@ -7,13 +7,13 @@ Created on Wed May  1 18:17:59 2019
 
 import matplotlib.pyplot as plt
 import numpy as np
-import classMap
+from classMap import DistanceMap
 import scipy.ndimage
 
 #%% chargement de l'image
-name = 'maze8'
+name = 'maze3'
 
-img = scipy.ndimage.imread('../res/'+name+'.png',mode='L')
+img = plt.imread('../res/'+name+'.png')[:,:,0]
 plt.imshow(img,interpolation='nearest',cmap='gray') 
 #%noir = 0, blanc=1
 imgnb = np.zeros(img.shape)
@@ -40,7 +40,7 @@ plt.imshow(T1,interpolation='nearest')
 Vit = T1/np.max(T1)
 W = 1./(0.0001+imgnb) + 10./(0.0001+Vit)
 
-p0 = (399,332)
+p0 = (45,3)
 m2  = DistanceMap([p0],W)
 m2.calculerDistance()
 T2 = m2.distanceMap()
@@ -51,7 +51,7 @@ plt.imshow(T2,interpolation='nearest')
 plt.scatter([p0[1]],[p0[0]],c="Green",s=30)
 
 #%
-I,J = m2.calculGeodesic((20,399),alpha=0.05,it_max=300000)
+I,J = m2.calculGeodesic((4,150),alpha=0.05,it_max=300000)
 
 #%% affichage de la géodesique
 fig = plt.figure()
@@ -64,6 +64,3 @@ ax.set_xlim((0,imgnb.shape[1]))
 plt.show()
 
 
-#%%
-
-#np.save('../result/'+name+'.npy',T)

@@ -12,8 +12,7 @@ pour visualiser l'animation
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-import classMap
-import scipy.ndimage
+from classMap import DistanceMap
 
 F1 = 255*np.ones((50,49))
 noir = 1
@@ -47,12 +46,13 @@ plt.gray()
 plt.imshow(F2,interpolation='nearest')
 #%% affichage rapide
 
-p0 = [(14,14)]
-m = classMap.DistanceMap(p0,Ft2)
+p0 = (14,14)
+m = classMap.DistanceMap([p0],Ft2)
 
 fig,ax = plt.subplots()
 
 plt.plasma()
+
 im = plt.imshow(m.distanceMap())
 #im = plt.imshow(Ft,interpolation='nearest', animated=True,cmap='Greys')
 
@@ -72,7 +72,7 @@ ani.save('ani0.mp4')
 #%% affichage avec superposition sur l'image initiale (trop lent!)
 
 p0 = [(14,14)]
-m = classMap.DistanceMap(p0,Ft)
+m = DistanceMap(p0,Ft)
 
 fig,ax = plt.subplots()
 

@@ -232,7 +232,6 @@ class DistanceMap:
                     D[i,j] = np.inf;
         return D
     
-    
 
     def calculGeodesic(self,pi,alpha=0.1,it_max=100000):
         """
@@ -275,7 +274,7 @@ class DistanceMap:
             it += 1
             
         return I,J
-      
+    
     def calculGeodesicInter(self,pi,alpha=0.1,it_max=100000):
         #interpolation de T
         T_inter = interpolate.interp2d(np.arange(self.largeur),np.arange(self.hauteur),self.distanceMap(),kind='linear')

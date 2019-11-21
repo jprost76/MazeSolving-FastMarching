@@ -9,8 +9,7 @@ Created on Fri May  3 14:20:15 2019
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-import classMap
-import scipy.ndimage
+from classMap import DistanceMap
 
 #image blanc=1, noir=0
 F = 255*np.ones((50,50))

@@ -13,11 +13,14 @@ import matplotlib.colors as colors
 import classMap
 import scipy.ndimage
 
+from matplotlib.animation import FFMpegWriter
+writer = FFMpegWriter(fps=15, metadata=dict(artist='Me'), bitrate=1800)
+
 #choix du labyrinthe
 name = 'maze'
 
 #chargement de l'image
-img = scipy.ndimage.imread('../res/'+name+'.png',mode='L')
+img = plt.imread('../res/'+name+'.png')[:,:,0]
 plt.imshow(img,interpolation='nearest',cmap='gray') 
 #%noir = 0, blanc=1
 imgnb = np.zeros(img.shape)
@@ -37,7 +40,7 @@ W1 = 1./(0.001+imgnb)
 m1 = classMap.DistanceMap(linit,W1)
 
 #animation du calcul de la vitesse?
-anim_vit = True
+anim_vit = False
 
 if (anim_vit == True):
    fig = plt.figure()
@@ -49,6 +52,7 @@ if (anim_vit == True):
       i += 1
       if (i%100 == 0):
           T = m1.distanceMap()
+          #les murs
           T[((T==np.inf)&(imgnb==0))] = -1
           T_max = np.max(T[(T!=np.inf) & (imgnb!=0)] )
           T_masked = np.ma.masked_array(T,np.isinf(T))
@@ -68,7 +72,7 @@ T1 = m1.distanceMap()
 
 
 
-p0 = [(317,168)] 
+p0 = [(317,168)]
 Vit = T1/np.max(T1)
 W = 1./(0.0001+imgnb) + 10./(0.0001+Vit)
 m = classMap.DistanceMap(p0,W)
@@ -95,8 +99,10 @@ if (anim_ff==True):
           ims.append([im])
     #%
     ani = animation.ArtistAnimation(fig, ims, interval=5, blit=True,repeat_delay=500)
+
     plt.show()
 else:
+    m.calculerDistance()
     T2 = m.distanceMap()
     
 #%% gradient a corriger!
@@ -106,22 +112,25 @@ I,J = m.calculGeodesic((4,175))
 anim_grad = True
 
 if (anim_grad==True):
-    fig,ax =plt.subplots()
+    fig,ax = plt.subplots()
     Y = []
-    J = []
-    ln, = plt.plot([],[],'g')
+    X = []
     
-    def init():
-        ln.set_date([],[])
-        return ln,
+    fig = plt.figure()
+    ims = []
+    im = plt.imshow(imgnb)
+    #%
+    for i in range(len(I)):
+        if (i%10 == 0):
+            ax.imshow(imgnb,interpolation='nearest',cmap='gray')
+            ax.set_ylim((imgnb.shape[0],0))
+            ax.set_xlim((0,imgnb.shape[1]))
+            im = ax.plot(J[0:i],I[0:i],c='g',linewidth=2.5,animated=True)
+            ims.append([im])
+    
+    
         
-    def animate(i):
-        Y = I[0:i]
-        X = J[0:i]
-        ln.set_data(Y,X)
-        return ln,
-        
-    anim3 = animation.FuncAnimation(fig,animate,frames=200,init_func=init,interval=5,blit=True
+    anim3 = animation.FuncAnimation(fig,animate,frames=1000,init_func=init,interval=5,blit=True
     )
     plt.show()
     
